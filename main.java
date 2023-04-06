@@ -63,13 +63,13 @@ public class main {
             }
         }
 
-        System.out.println("The Grids have been scored as follows: ");
-        System.out.println("M GRID");
-        printGrid(mGrid);
-        System.out.println("X GRID");
-        printGrid(xGrid);
-        System.out.println("Y GRID");
-        printGrid(yGrid);
+        // System.out.println("The Grids have been scored as follows: ");
+        // System.out.println("M GRID");
+        // printGrid(mGrid);
+        // System.out.println("X GRID");
+        // printGrid(xGrid);
+        // System.out.println("Y GRID");
+        // printGrid(yGrid);
 
         // backtrack to find algnment
         System.out.println("\nBacktracking Graphs to Find Alignment...");
