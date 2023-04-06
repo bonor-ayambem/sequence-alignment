@@ -4,8 +4,8 @@ import java.util.*;
 public class main {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
-        String sequence1 = "";
-        String sequence2 = "";
+        String name1 = "", sequence1 = "";
+        String name2 = "", sequence2 = "";
 
         System.out.println("Enter File Name: ");
         String filename = sc.nextLine();
@@ -13,9 +13,9 @@ public class main {
 
         try{
             Scanner reader = new Scanner(inputFile);
-            reader.nextLine();
+            name1 = reader.nextLine().trim();
             sequence1 = reader.nextLine().trim();
-            reader.nextLine();
+            name2 = reader.nextLine().trim();
             sequence2 = reader.nextLine().trim();
         }
         catch(Exception e) {
@@ -63,7 +63,6 @@ public class main {
             }
         }
 
-
         System.out.println("The Grids have been scored as follows: ");
         System.out.println("M GRID");
         printGrid(mGrid);
@@ -71,6 +70,61 @@ public class main {
         printGrid(xGrid);
         System.out.println("Y GRID");
         printGrid(yGrid);
+
+        // backtrack to find algnment
+        System.out.println("\nBacktracking Graphs to Find Alignment...");
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+
+        int i = m, j = n;
+        while(i >= 0 || j >= 0){
+            // System.out.println("here");
+            int match = i > 0 && j > 0 && sequence1.charAt(j-1) == sequence2.charAt(i-1) ? 1 : -4;
+
+            double mTrans = i > 0 && j > 0 ? mGrid[i-1][j-1] + match : Double.MAX_VALUE;
+            double xTrans = xGrid[i][j];
+            double yTrans = yGrid[i][j];
+
+            while((i > 0 || j > 0) && mTrans < xTrans || mTrans < yTrans){ // while we are not in the M grid / open a gap
+            // System.out.println(i + " " + j + " " + mTrans + " " + xTrans + " " + yTrans);
+                while(j > 0 && xTrans > mTrans && xTrans > yTrans){
+                    // System.out.println("in x graph");
+                    sb1.insert(0, sequence1.charAt(j-1));
+                    sb2.insert(0, '-');
+
+                    mTrans = mGrid[i][j-1] - 10.5 - 0.5;
+                    xTrans = xGrid[i][j-1] - 0.5;
+                    yTrans = yGrid[i][j-1] - 10.5 - 0.5;
+
+                    j--;
+                }
+                while(i > 0 && yTrans > mTrans && yTrans > xTrans){
+                    // System.out.println("in Y graph");
+                    sb1.insert(0, '-');
+                    sb2.insert(0, sequence2.charAt(i-1));
+
+                    mTrans = mGrid[i-1][j] - 10.5 - 0.5;
+                    yTrans = yGrid[i-1][j] - 0.5;
+                    xTrans = xGrid[i-1][j] - 10.5 - 0.5;
+
+                    i--;
+                }
+            }
+
+            
+            if(j > 0) sb1.insert(0, sequence1.charAt(j-1));
+            // else sb1.insert(0, sequence1.charAt(j-1));
+            if(i > 0)sb2.insert(0, sequence2.charAt(i-1));
+
+            i--; j--;        
+        }
+
+        String ansSeq1 = sb1.toString();
+        String ansSeq2 = sb2.toString();
+
+        System.out.println("The final alignments are as follows: ");
+        System.out.println(name1 + "\n" + ansSeq1);
+        System.out.println(name2 + "\n" + ansSeq2);
     }
 
     public static void initializeGrids(double[][] m, double[][] x, double[][] y){
@@ -97,9 +151,9 @@ public class main {
         for(int i = 0; i < grid.length; i++){
             for(int j = 0; j < grid[i].length; j++){
                 if(grid[i][j] == -Double.MAX_VALUE){
-                    System.out.print("-INF" + "\t\t");
+                    System.out.print("-INF" + "\t");
                 }
-                else System.out.print(grid[i][j] + "\t\t");
+                else System.out.print(grid[i][j] + "\t");
             }
             System.out.println();
         }
